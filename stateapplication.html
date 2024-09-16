@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<body>
+    <input id="title" type="text" placeholder="title"><br><br>
+    <input id="description" type="text" placeholder="description"><br><br>
+    <div id="container"></div>
+
+    <script>
+        function createchild(title, description, id) {
+            const child = document.createElement("div"); // It is in memory
+            const firstgrandchild = document.createElement("div");
+            firstgrandchild.innerHTML = title;
+            const secondgrandchild = document.createElement("div");
+            secondgrandchild.innerHTML = description;
+            const thirdgrandchild = document.createElement("button");
+            thirdgrandchild.innerHTML = "Mark as done";
+
+            thirdgrandchild.setAttribute("onclick", `markasdone('${id}')`);
+            child.appendChild(firstgrandchild);
+            child.appendChild(secondgrandchild);
+            child.appendChild(thirdgrandchild);
+            child.setAttribute("id", id);
+            return child;
+        }
+
+        function updateacctoser(state) {
+            const parent = document.getElementById("container");
+            parent.innerHTML = "";
+            for (let i = 0; i < state.length; i++) {
+                const child = createchild(state[i].title, state[i].description, state[i].id);
+                parent.appendChild(child);
+            }
+        }
+
+        function markasdone(id) {
+            console.log(`Todo item with ID ${id} marked as done.`);
+            // Add code to handle marking the item as done
+            // For example, you might want to update the item visually or send a request to the server
+        }
+
+        // Initial state
+        updateacctoser([{
+            title: "Go to gym",
+            description: '5 to 7',
+            id: '1'
+        }, {
+            title: "Go to office",
+            description: "9 to 5",
+            id: '2'
+        }]);
+
+        // Periodic update
+        window.setInterval(async function () {
+            try {
+                const res = await fetch("http://127.0.0.1:5500/Class4.2/stateapplication.json"); // Ensure this returns JSON
+                if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
+                const json = await res.json();
+                updateacctoser(json);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        }, 5000);
+    </script>
+</body>
+</html>
